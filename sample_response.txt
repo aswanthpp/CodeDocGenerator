@@ -1,0 +1,113 @@
+# Documentation for TaskManagementService Class
+
+## 1. Identify Functions
+
+### 1.1 `addNotes`
+```java
+public boolean addNotes(Note note)
+```
+**Description:** Adds a new note to the system.
+
+**Parameters:**
+- `note` (type: Note): The note to be added.
+
+**Return Type:** boolean
+- `true` if the note is successfully added, otherwise `false`.
+
+### 1.2 `removeNotes`
+```java
+public boolean removeNotes(String currentValue)
+```
+**Description:** Removes a note from the system based on its value.
+
+**Parameters:**
+- `currentValue` (type: String): The value of the note to be removed.
+
+**Return Type:** boolean
+- `true` if the note is successfully removed, otherwise `false`.
+
+### 1.3 `updateNotes`
+```java
+public boolean updateNotes(String currentValue, Note newNote)
+```
+**Description:** Updates an existing note in the system with a new note.
+
+**Parameters:**
+- `currentValue` (type: String): The value of the note to be updated.
+- `newNote` (type: Note): The new note to replace the existing one.
+
+**Return Type:** boolean
+- `true` if the note is successfully updated, otherwise `false`.
+
+### 1.4 `listAll`
+```java
+public List listAll()
+```
+**Description:** Retrieves a list of all notes in the system.
+
+**Return Type:** List
+- A list containing all notes in the system.
+
+## 2. Identify Dependencies
+
+- The `TaskManagementService` class depends on the following classes and interfaces:
+  - `NotesDao`: Interface for data access operations.
+  - `NotesMemoryDao`: Implementation of `NotesDao` using in-memory storage.
+  - `NotesMySQLDao`: Implementation of `NotesDao` using MySQL database.
+  - `Note`: Represents a note entity.
+
+## 3. Initialization
+
+```java
+private NotesDao notesDao = new NotesMySQLDao();
+// private NotesDao notesDao = new NotesMemoryDao();
+```
+**Description:** The `TaskManagementService` class initializes the `notesDao` variable with an instance of `NotesMySQLDao`. You can also use `NotesMemoryDao` by commenting out the first line and uncommenting the second line.
+
+## 4. Flow Diagram
+
+The flow of the `TaskManagementService` class can be represented by the following diagram:
+
+```
++---------------------------------------+
+|              TaskManagementService   |
+|                                       |
+|  +------------------+                 |
+|  |     addNotes     |<----------------+
+|  +------------------+                 |
+|           |                           |
+|           v                           |
+|  +------------------+                 |
+|  |   NotesMySQLDao  |                 |
+|  +------------------+                 |
+|                                       |
+|  +------------------+                 |
+|  |  removeNotes    |<----------------+
+|  +------------------+                 |
+|           |                           |
+|           v                           |
+|  +------------------+                 |
+|  |   NotesMySQLDao  |                 |
+|  +------------------+                 |
+|                                       |
+|  +------------------+                 |
+|  |  updateNotes    |<----------------+
+|  +------------------+                 |
+|           |                           |
+|           v                           |
+|  +------------------+                 |
+|  |   NotesMySQLDao  |                 |
+|  +------------------+                 |
+|                                       |
+|  +------------------+                 |
+|  |    listAll      |<----------------+
+|  +------------------+                 |
+|           |                           |
+|           v                           |
+|  +------------------+                 |
+|  |   NotesMySQLDao  |                 |
+|  +------------------+                 |
++---------------------------------------+
+```
+
+This diagram illustrates the interaction between the `TaskManagementService` class and the `NotesMySQLDao` class for each function. The `NotesMySQLDao` class is responsible for the actual data access operations.
