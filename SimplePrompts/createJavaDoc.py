@@ -49,11 +49,15 @@ def processInputFile(java_file_path):
         java_code = file.read()
 
     # prompt = f"Generate Javadoc comments for the following Java class and each functions and return the commented java class for the file :\n{java_code}"
-    prompt = f"""Create Documentation file which contains folowwing sections for the given file
-                1. Identify functions
-                2. Identify dependencies
-                3. Initialization  
-                4. Flow diagram
+    # prompt = f"""Create Documentation file which contains folowwing sections for the given file
+    #             1. Identify functions
+    #             2. Identify dependencies
+    #             3. Initialization  
+    #             4. Flow diagram
+    #             Sample code:
+    #             \n{java_code}"""
+    
+    prompt = f"""Create Software Requirement Specfication document for the below java
                 Sample code:
                 \n{java_code}"""
     print("--------------------------PROMPT--------------------------------------")
@@ -61,10 +65,10 @@ def processInputFile(java_file_path):
     print("----------------------------------------------------------------------")
     print("\n\n\n")
     
-    generated_comments= getOpenAiCompletion(prompt)
-    print("--------------------------RESPONSE------------------------------------")
-    print(generated_comments)
-    print("----------------------------------------------------------------------")
+    # generated_comments= getOpenAiCompletion(prompt)
+    # print("--------------------------RESPONSE------------------------------------")
+    # print(generated_comments)
+    # print("----------------------------------------------------------------------")
 
 
     # responseDoc=getOpenAiChatCompletion(java_code)
