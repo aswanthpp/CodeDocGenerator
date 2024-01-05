@@ -89,6 +89,6 @@ def get_response():
             }), 200
 
 if(__name__=='__main__'):
-    print("Please set env OPENAI_API_KEY")
+    print("Please set env OPENAI_API_KEY, before starting the application")
     print("starting flask app")
     app.run(host='0.0.0.0', port=5050)
