@@ -2,7 +2,6 @@ import sys
 
 import jsonschema
 from flask import *
-from flask_cors import CORS
 from utils import *
 app = Flask(__name__)
 load_data_schema = {
@@ -90,11 +89,11 @@ def get_response():
             }), 200
 
 if(__name__=='__main__'):
-    if len(sys.argv) != 2:
-        print("Usage: python script.py <API_KEY>")
-        sys.exit(1)
-    else:
-        api_key = sys.argv[1]
-        os.environ["OPENAI_API_KEY"] = api_key
+    # if len(sys.argv) != 2:
+        # print("Usage: python script.py <API_KEY>")
+        # sys.exit(1)
+    # else:
+        # api_key = sys.argv[1]
+        # os.environ["OPENAI_API_KEY"] = api_key
         print("starting flask app")
         app.run(host='0.0.0.0', port=5050)

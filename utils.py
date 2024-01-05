@@ -1,7 +1,8 @@
 
 import sys
 import os
-
+import subprocess
+import shutil
 from langchain.text_splitter import Language
 from langchain_community.document_loaders.generic import GenericLoader
 from langchain_community.document_loaders.parsers import LanguageParser
@@ -12,7 +13,41 @@ from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationSummaryMemory
 from langchain_community.chat_models import ChatOpenAI
 
+def clone_repository(url, destination="tmp"):
+    """
+    Clone a Git repository from the specified URL into the given destination directory.
 
+    Parameters:
+    - url: The URL of the Git repository.
+    - destination: The directory where the repository will be cloned.
+
+    Returns:
+    - True if the cloning is successful, False otherwise.
+    """
+    try:
+        # Run the git clone command
+        subprocess.run(["git", "clone", url, destination], check=True)
+        print(f"Repository cloned successfully into {destination}")
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"Error cloning repository: {e}")
+        return False
+
+def delete_tmp_directory():
+    try:
+        tmp_directory="tmp"
+        # Check if the directory exists
+        if os.path.exists(tmp_directory):
+            # Delete the directory and its contents
+            shutil.rmtree(tmp_directory)
+            print(f"Temporary directory {tmp_directory} deleted successfully.")
+        else:
+            print(f"Temporary directory {tmp_directory} does not exist.")
+
+        return True
+    except Exception as e:
+        print(f"Error deleting temporary directory: {e}")
+        return False
 def load_documents(repo_path, language):
     if language.lower() == 'python':
         suffixes = [".py"]
@@ -62,25 +97,31 @@ def create_retriever(db):
     return retriever
 
 def update_data_store(repo_path, language):
-    documents = load_documents(repo_path,language)
-    texts = split_documents(documents,language)
-    db = store_documents(texts)
-    retriever = create_retriever(db)
+    delete_tmp_directory()
+    file_path="tmp"
+    status=clone_repository(repo_path, file_path)
+    if(status):
+        documents = load_documents(file_path,language)
+        texts = split_documents(documents,language)
+        db = store_documents(texts)
+        retriever = create_retriever(db)
 
 
-    llm = ChatOpenAI(model_name="gpt-4")
-    memory = ConversationSummaryMemory(
-    llm=llm, memory_key="chat_history", return_messages=True
-)
-    qa = ConversationalRetrievalChain.from_llm(llm, retriever=retriever, memory=memory)
-    return qa
+        llm = ChatOpenAI(model_name="gpt-4")
+        memory = ConversationSummaryMemory(llm=llm, memory_key="chat_history", return_messages=True)
+        qa = ConversationalRetrievalChain.from_llm(llm, retriever=retriever, memory=memory)
+        return qa
+    else:
+        return None
 
 def generate_response(qa,prompt):
     result = qa(prompt)
 
     return result["answer"]
 
-# if(__name__=='__main__'):
+if(__name__=='__main__'):
+    response=clone_repository("https://github.com/aswanthpp/CodeDocGenerator")
+    print(response)
 #     if len(sys.argv) != 2:
 #      print("Usage: python script.py <API_KEY>")
 #      sys.exit(1)
