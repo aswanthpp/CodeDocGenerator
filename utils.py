@@ -14,16 +14,6 @@ from langchain.memory import ConversationSummaryMemory
 from langchain_community.chat_models import ChatOpenAI
 
 def clone_repository(url, destination="tmp"):
-    """
-    Clone a Git repository from the specified URL into the given destination directory.
-
-    Parameters:
-    - url: The URL of the Git repository.
-    - destination: The directory where the repository will be cloned.
-
-    Returns:
-    - True if the cloning is successful, False otherwise.
-    """
     try:
         # Run the git clone command
         subprocess.run(["git", "clone", url, destination], check=True)
@@ -33,16 +23,15 @@ def clone_repository(url, destination="tmp"):
         print(f"Error cloning repository: {e}")
         return False
 
-def delete_tmp_directory():
+def delete_tmp_directory(file_path):
     try:
-        tmp_directory="tmp"
         # Check if the directory exists
-        if os.path.exists(tmp_directory):
+        if os.path.exists(file_path):
             # Delete the directory and its contents
-            shutil.rmtree(tmp_directory)
-            print(f"Temporary directory {tmp_directory} deleted successfully.")
+            shutil.rmtree(file_path)
+            print(f"Temporary directory {file_path} deleted successfully.")
         else:
-            print(f"Temporary directory {tmp_directory} does not exist.")
+            print(f"Temporary directory {file_path} does not exist.")
 
         return True
     except Exception as e:
@@ -97,8 +86,8 @@ def create_retriever(db):
     return retriever
 
 def update_data_store(repo_path, language):
-    delete_tmp_directory()
     file_path="tmp"
+    delete_tmp_directory(file_path)
     status=clone_repository(repo_path, file_path)
     if(status):
         documents = load_documents(file_path,language)
@@ -118,23 +107,6 @@ def generate_response(qa,prompt):
     result = qa(prompt)
 
     return result["answer"]
-
-if(__name__=='__main__'):
-    response=clone_repository("https://github.com/aswanthpp/CodeDocGenerator")
-    print(response)
-#     if len(sys.argv) != 2:
-#      print("Usage: python script.py <API_KEY>")
-#      sys.exit(1)
-
-#     api_key = sys.argv[1]
-#     os.environ["OPENAI_API_KEY"] = api_key
-
-#     repo_path="~/Learning/SelfLearning/GenAI/CodeDocGenerator/SimplePrompts"
-#     language="PYTHON"
-    
-#     qa = update_data_store(repo_path,language)
-#     response=generate_response(qa)
-#     print(response)
 
 
 
