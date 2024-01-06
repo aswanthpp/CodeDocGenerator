@@ -4,7 +4,7 @@ Generate response from LLM with a given codbase context. Currently this supports
 
 ## Build
 
-### 1. Using Docker
+1. Using Docker
 ```shell
 docker build -t codedoc .
 docker run -p 5050:5050 -e OPENAI_API_KEY="<YOUR_OPEN_AI_KEY>" codedoc
@@ -15,7 +15,7 @@ docker pull aswanthpp/code_doc_gen_llm:pilot_v.0.0.1
 docker run -p 5050:5050 -e OPENAI_API_KEY="<YOUR_OPEN_AI_KEY>" aswanthpp/code_doc_gen_llm:pilot_v.0.0.1
 ```
 
-### 2. Using Flask
+2. Using Flask
 ```shell
 pip install -r requirements.txt
 export OPENAI_API_KEY="<YOUR_OPEN_AI_KEY>"
