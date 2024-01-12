@@ -2,7 +2,7 @@ import sys
 
 import jsonschema
 from flask import *
-from utils import *
+from static.lib.utils import *
 app = Flask(__name__)
 load_data_schema = {
 "type": "object",
@@ -24,11 +24,9 @@ query_data_schema = {
 
 qa = None
 
-
-@app.route('/', methods=['GET'])
-def health():
-    return "Flask Application is Running", 200
-
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 @app.route('/load', methods=['POST'])
 def load_documents_to_store():
@@ -50,12 +48,18 @@ def load_documents_to_store():
         }), 200
     path=payload.get('path',None)
     language=payload.get('language',None)
-    global qa
-    qa=update_data_store(path,language)
+    # global qa
+    # qa=update_data_store(path,language)
+    # return jsonify({
+    #             'status': 'Success',
+    #             'response': "Load documents Completed"
+    #         }), 200
+
     return jsonify({
                 'status': 'Success',
-                'response': "Load documents Completed"
+                'response': f"Load documents Completed for {path}"
             }), 200
+
 
 @app.route('/chat', methods=['POST'])
 def get_response():
@@ -76,16 +80,21 @@ def get_response():
 
         }), 200
     query=payload.get('query',None)
-    response=generate_response(qa,query)
-    if(qa is None):
-        return jsonify({
-            'status': 'Failure',
-            'response': 'You need to load the document first, using /load'
-        }), 200
-    else:
-        return jsonify({
+    # response=generate_response(qa,query)
+    # if(qa is None):
+    #     return jsonify({
+    #         'status': 'Failure',
+    #         'response': 'You need to load the document first, using /load'
+    #     }), 200
+    # else:
+    #     return jsonify({
+    #             'status': 'Success',
+    #             'response': response
+    #         }), 200
+
+    return jsonify({
                 'status': 'Success',
-                'response': response
+                'response': f"Query Fired: {query}"
             }), 200
 
 if(__name__=='__main__'):
