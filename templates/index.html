@@ -1,57 +1,127 @@
 <!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
     <title>Code Info Generator</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/custom.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h2>Load</h2>
+      <form id="urlForm">
+        <div class="form-row">
+          <div class="form-group col-md-9">
+            <label for="urlInput">Enter Public Gtihub URL:</label>
+            <input
+              type="url"
+              class="form-control"
+              id="urlInput"
+              name="url"
+              placeholder="https://github.com/org/repo"
+            />
+          </div>
 
-<div class="container mt-5">
-    <h2>Load</h2>
-    <form id="urlForm">
-        <div class="form-group">
-            <label for="urlInput">Enter URL:</label>
-            <input type="url" class="form-control" id="urlInput" name="url" placeholder="Enter URL">
-        </div>
-
-        <div class="form-group">
+          <div class="form-group col-md-3">
             <label for="languageSelect">Select Language:</label>
             <select class="form-control" id="languageSelect" name="language">
-                <option value="java">Java</option>
-                <option value="python">Python</option>
+              <option value="java">Java</option>
+              <option value="python">Python</option>
             </select>
+          </div>
+
+          <div class="form-group col-md-2">
+            <span
+              ><button
+                type="button"
+                class="btn btn-primary"
+                onclick="loadUrl()"
+                id="loadButton"
+              >
+                Load
+              </button></span
+            >
+            <div
+              class="spinner-border text-dark"
+              role="status"
+              id="loadingSpinner"
+              style="display: none"
+            >
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
         </div>
+      </form>
+      <div
+        class="alert alert-success mt-3"
+        role="alert"
+        id="loadedUrl"
+        style="display: none"
+      >
+        LLM is aware of <span id="loadedUrlText"></span> Codebase
+      </div>
+    </div>
 
-        <button type="button" class="btn btn-primary" onclick="loadUrl()">Load</button>
-    </form>
-</div>
+    <div class="container mt-5" id="responseBubble"></div>
 
-<div class="container mt-5" id="responseBubble"></div>
+    <div class="container mt-5">
+      <h2>Chat</h2>
+      <form id="chatForm">
+        <div class="form-row">
+          <div class="form-group col-md-10">
+            <textarea
+              class="form-control"
+              id="query"
+              name="query"
+              rows="3"
+              placeholder="eg: What are the conversion conversions available in your code"
+            ></textarea>
+          </div>
 
-
-<div class="container mt-5">
-    <h2>Chat</h2>
-    <form id="urlForm">
-        <div class="form-group">
-            <label for="queryInput">Enter Chat:</label>
-            <input type="text" class="form-control" id="query" name="query" placeholder="eg: What are the conversion available in your query">
+          <div class="form-group col-md-2">
+            <span
+              ><button
+                type="button"
+                class="btn btn-primary"
+                onclick="getResponse()"
+                id="queryButton"
+              >
+                Chat
+              </button></span
+            >
+            <div
+              class="spinner-border text-dark"
+              role="status"
+              id="querySpinner"
+              style="display: none"
+            >
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
         </div>
+      </form>
+    </div>
 
-        <button type="button" class="btn btn-primary" onclick="getResponse()">Chat</button>
-    </form>
-</div>
+    <div class="container mt-5" id="chat-container">
+      <div class="chat">
+        <div class="message" id="response"></div>
+      </div>
+    </div>
 
-<div class="container mt-5" id="response"></div>
-
-
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="../static/js/clientSide.js"></script>
-
-</body>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="../static/js/clientSide.js"></script>
+  </body>
 </html>

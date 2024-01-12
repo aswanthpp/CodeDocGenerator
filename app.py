@@ -46,19 +46,21 @@ def load_documents_to_store():
             'message': "Schema Varildation Failed, Mandatory Fields are missing.`path` and `language` are mandatory key in payload"
 
         }), 200
-    path=payload.get('path',None)
-    language=payload.get('language',None)
-    # global qa
-    # qa=update_data_store(path,language)
-    # return jsonify({
-    #             'status': 'Success',
-    #             'response': "Load documents Completed"
-    #         }), 200
+    try:
+        path=payload.get('path',None)
+        language=payload.get('language',None)
+        global qa
+        qa=update_data_store(path,language)
+        return jsonify({
+                    'status': 'Success',
+                    'message': "Loading Codebase is Completed"
+                }), 200
+    except Exception as e:
+        return jsonify({
+            'status': 'Failure',
+            'message': "Please set Valid OPEN_API_KEY as Env, or Enter public Github url"
 
-    return jsonify({
-                'status': 'Success',
-                'response': f"Load documents Completed for {path}"
-            }), 200
+        }), 200
 
 
 @app.route('/chat', methods=['POST'])
@@ -80,21 +82,16 @@ def get_response():
 
         }), 200
     query=payload.get('query',None)
-    # response=generate_response(qa,query)
-    # if(qa is None):
-    #     return jsonify({
-    #         'status': 'Failure',
-    #         'response': 'You need to load the document first, using /load'
-    #     }), 200
-    # else:
-    #     return jsonify({
-    #             'status': 'Success',
-    #             'response': response
-    #         }), 200
-
-    return jsonify({
+    response=generate_response(qa,query)
+    if(qa is None):
+        return jsonify({
+            'status': 'Failure',
+            'message': 'You need to load the document first, using /load'
+        }), 200
+    else:
+        return jsonify({
                 'status': 'Success',
-                'response': f"Query Fired: {query}"
+                'message': response
             }), 200
 
 if(__name__=='__main__'):
