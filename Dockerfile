@@ -14,7 +14,8 @@ RUN pip3 install -r /usr/src/app/requirements.txt
 
 #Copying Flask App files
 COPY app.py /usr/src/app/
-COPY utils.py /usr/src/app/
+COPY static/ /usr/src/app/static
+COPY templates/ /usr/src/app/templates
 
 ENV OPENAI_API_KEY=""
 
