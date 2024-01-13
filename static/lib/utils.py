@@ -1,7 +1,5 @@
 
-import sys
 import os
-import subprocess
 import shutil
 from langchain.text_splitter import Language
 from langchain_community.document_loaders.generic import GenericLoader
@@ -12,119 +10,118 @@ from langchain_community.vectorstores import Chroma
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationSummaryMemory
 from langchain_openai import ChatOpenAI
-from git import Repo
+from git import InvalidGitRepositoryError, Repo
 from langchain_community.document_loaders import GitLoader
 
+file_path="source_code"
 
+class LangChainCodeLoder:
+    def __init__(self,qa):
+        self.qa=qa
 
-def get_document_from_git(url,path):
-    repo = Repo.clone_from(url, to_path=path)
-    branch =repo.head.reference
-    loader = GitLoader(repo_path=path, branch=branch)
-    documents=loader.load()
-    return documents
+    def delete_tmp_directory(self):
+        try:
+            # Check if the directory exists
+            if os.path.exists(file_path):
+                # Delete the directory and its contents
+                shutil.rmtree(file_path)
+            return True
+        except Exception as e:
+            print(f"Got Exception while deleting temporary directory: {e}")
+            return False
+        
+    def get_document_from_git(self, url):
+        try:
+            print("Cloning Started.......")
+            repo = Repo.clone_from(url, to_path=file_path)
+            branch =repo.head.reference
+            print("Cloning Completed.......")
+            
+            print("GitLoader Started.......")
+            loader = GitLoader(repo_path=file_path, branch=branch)
+            documents=loader.load()
+            print("GitLoader Completed.......")
 
+            print("Branch: ", branch)
+            print("Length of documents: ",len(documents))
 
-def clone_repository(url, destination="tmp"):
-    try:
-        # Run the git clone command
-        subprocess.run(["git", "clone", url, destination], check=True)
-        print(f"Repository cloned successfully into {destination}")
-        return True
-    except subprocess.CalledProcessError as e:
-        print(f"Error cloning repository: {e}")
-        return False
+            return documents
+        except InvalidGitRepositoryError as e:
+            print(f"Error: Invalid Git repository - {e}")
+            return None
+        except Exception as e:
+            print(f"Got Excpetion while loading document: {e}")
+            return None
+           
+        
+    def create_retriever(self,documents,language):
+        try:
+            
+            if language.lower() == 'python':
+                splitter = RecursiveCharacterTextSplitter.from_language(
+                    language=Language.PYTHON, chunk_size=2000, chunk_overlap=200
+                )
+            elif language.lower() == 'java':
+                splitter = RecursiveCharacterTextSplitter.from_language(
+                    language=Language.JAVA, chunk_size=2000, chunk_overlap=200
+                )
+            else:
+                raise ValueError("Unsupported language")
 
-def delete_tmp_directory(file_path):
-    try:
-        # Check if the directory exists
-        if os.path.exists(file_path):
-            # Delete the directory and its contents
-            shutil.rmtree(file_path)
-            print(f"Temporary directory {file_path} deleted successfully.")
-        else:
-            print(f"Temporary directory {file_path} does not exist.")
+            texts = splitter.split_documents(documents)
+            db = Chroma.from_documents(texts, OpenAIEmbeddings(disallowed_special=()))
+            retriever = db.as_retriever(
+            search_type="mmr",  # Also test "similarity"
+            search_kwargs={"k": 8},
+            )
+            return retriever
+        except Exception as e:
+            print(f"Got Expcetion while creating Retriver: {e}")
+            return None
+            
 
-        return True
-    except Exception as e:
-        print(f"Error deleting temporary directory: {e}")
-        return False
+    def update_data_store(self,repo_path, language):
+        if(not self.delete_tmp_directory()):
+           response_json={
+                    'status': 'Failure',
+                    'message': "Exception while cleaning up older documents"
+                }
+           return response_json
+        
+        documents=self.get_document_from_git(repo_path)
+        if(documents==None):
+            response_json={
+                    'status': 'Failure',
+                    'message': "Please Enter valid github repo, which is public"
+                }
+            return response_json
+
+        try:
+            retriever =self.create_retriever(documents,language)
+
+            llm = ChatOpenAI(model_name="gpt-4")
+            memory = ConversationSummaryMemory(llm=llm, memory_key="chat_history", return_messages=True)
+            qa = ConversationalRetrievalChain.from_llm(llm, retriever=retriever, memory=memory)
+            self.qa=qa
+            response_json={
+            'status': 'Success',
+            'message': "Loading Codebase is Completed"
+            }
+            return response_json
+        except Exception as e:
+            print(f"Got Expcetion while Embedding Retriver with OpenAI: {e}")
+            response_json={
+            'status': 'Failure',
+            'message': "Exception while loading codebase to store"
+            }
+            return response_json
     
 
-def load_documents(repo_path, language):
-    if language.lower() == 'python':
-        suffixes = [".py"]
-        parser = LanguageParser(language=Language.PYTHON, parser_threshold=500)
-    elif language.lower() == 'java':
-        suffixes = [".java"]
-        parser = LanguageParser(language=Language.JAVA, parser_threshold=500)
-    else:
-        raise ValueError("Unsupported language")
-
-    loader = GenericLoader.from_filesystem(
-        repo_path,
-        glob="**/*",
-        suffixes=suffixes,
-        exclude=["**/non-utf8-encoding.py"],
-        parser=parser,
-    )
-    documents = loader.load()
-    return documents
-
-def split_documents(documents, language):
-    if language.lower() == 'python':
-        splitter = RecursiveCharacterTextSplitter.from_language(
-            language=Language.PYTHON, chunk_size=2000, chunk_overlap=200
-        )
-    elif language.lower() == 'java':
-        splitter = RecursiveCharacterTextSplitter.from_language(
-            language=Language.JAVA, chunk_size=2000, chunk_overlap=200
-        )
-    else:
-        raise ValueError("Unsupported language")
-
-    texts = splitter.split_documents(documents)
-    return texts
-
-
-def store_documents(texts):
-    db = Chroma.from_documents(texts, OpenAIEmbeddings(disallowed_special=()))
-    return db
-
-def create_retriever(db):
-    retriever = db.as_retriever(
-    search_type="mmr",  # Also test "similarity"
-    search_kwargs={"k": 8},
-    )
-    
-    return retriever
-
-def update_data_store(repo_path, language):
-    file_path="tmp"
-    status=delete_tmp_directory(file_path)
-    # status=clone_repository(repo_path, file_path)
-    
-    if(status):
-        # documents = load_documents(file_path,language)
-        documents=get_document_from_git(repo_path,file_path)
-        texts = split_documents(documents,language)
-        db = store_documents(texts)
-        retriever = create_retriever(db)
-
-
-        llm = ChatOpenAI(model_name="gpt-4")
-        memory = ConversationSummaryMemory(llm=llm, memory_key="chat_history", return_messages=True)
-        qa = ConversationalRetrievalChain.from_llm(llm, retriever=retriever, memory=memory)
-        return qa
-    else:
-        return None
-
-def generate_response(qa,prompt):
-    result = qa(prompt)
-
-    return result["answer"]
-
-
-
-
+    def generate_response(self,prompt):
+        try:
+            result = self.qa(prompt)
+            return result["answer"]
+        except Exception as e:
+            print(f"Got Expcetion while Getting Response with OpenAI: {e}")
+            return None
 

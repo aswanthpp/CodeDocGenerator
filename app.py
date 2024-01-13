@@ -22,7 +22,8 @@ query_data_schema = {
 "required": ["query"]
 }
 
-qa = None
+flask_app_loader = LangChainCodeLoder(qa = None)
+
 
 @app.route('/')
 def index():
@@ -49,12 +50,8 @@ def load_documents_to_store():
     try:
         path=payload.get('path',None)
         language=payload.get('language',None)
-        global qa
-        qa=update_data_store(path,language)
-        return jsonify({
-                    'status': 'Success',
-                    'message': "Loading Codebase is Completed"
-                }), 200
+        response_json=flask_app_loader.update_data_store(path,language)
+        return jsonify(response_json), 200
     except Exception as e:
         print(f"Got exception in loading codebase: {e}")
         return jsonify({
@@ -83,8 +80,8 @@ def get_response():
 
         }), 200
     query=payload.get('query',None)
-    response=generate_response(qa,query)
-    if(qa is None):
+    response=flask_app_loader.generate_response(query)
+    if(response is None):
         return jsonify({
             'status': 'Failure',
             'message': 'You need to load the document first, using /load'
