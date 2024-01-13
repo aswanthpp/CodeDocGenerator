@@ -1,4 +1,5 @@
 langchain
+langchain_openai
 openai
 bs4
 chromadb
@@ -6,3 +7,4 @@ tiktoken
 jsonschema
 flask
 requests
+GitPython

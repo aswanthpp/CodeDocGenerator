@@ -56,6 +56,7 @@ def load_documents_to_store():
                     'message': "Loading Codebase is Completed"
                 }), 200
     except Exception as e:
+        print(f"Got exception in loading codebase: {e}")
         return jsonify({
             'status': 'Failure',
             'message': "Please set Valid OPEN_API_KEY as Env, or Enter public Github url"

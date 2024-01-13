@@ -7,11 +7,23 @@ from langchain.text_splitter import Language
 from langchain_community.document_loaders.generic import GenericLoader
 from langchain_community.document_loaders.parsers import LanguageParser
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.embeddings.openai import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationSummaryMemory
-from langchain_community.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
+from git import Repo
+from langchain_community.document_loaders import GitLoader
+
+
+
+def get_document_from_git(url,path):
+    repo = Repo.clone_from(url, to_path=path)
+    branch =repo.head.reference
+    loader = GitLoader(repo_path=path, branch=branch)
+    documents=loader.load()
+    return documents
+
 
 def clone_repository(url, destination="tmp"):
     try:
@@ -37,6 +49,8 @@ def delete_tmp_directory(file_path):
     except Exception as e:
         print(f"Error deleting temporary directory: {e}")
         return False
+    
+
 def load_documents(repo_path, language):
     if language.lower() == 'python':
         suffixes = [".py"]
@@ -87,10 +101,12 @@ def create_retriever(db):
 
 def update_data_store(repo_path, language):
     file_path="tmp"
-    delete_tmp_directory(file_path)
-    status=clone_repository(repo_path, file_path)
+    status=delete_tmp_directory(file_path)
+    # status=clone_repository(repo_path, file_path)
+    
     if(status):
-        documents = load_documents(file_path,language)
+        # documents = load_documents(file_path,language)
+        documents=get_document_from_git(repo_path,file_path)
         texts = split_documents(documents,language)
         db = store_documents(texts)
         retriever = create_retriever(db)
