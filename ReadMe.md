@@ -7,8 +7,8 @@ The Code Doc Generator is a utility that leverages a Language Model (LLM) to gen
 1. Using Docker
 
 ```shell
-docker pull aswanthpp/code_doc_gen_llm:v1.0.0
-docker run -p 5050:5050 -e OPENAI_API_KEY="<YOUR_OPEN_AI_KEY>" aswanthpp/code_doc_gen_llm:v1.0.0
+docker pull aswanthpp/code_doc_gen_llm:latest
+docker run -p 5050:5050 -e OPENAI_API_KEY="<YOUR_OPEN_AI_KEY>" aswanthpp/code_doc_gen_llm:latest
 ```
 
 2. Using Flask
