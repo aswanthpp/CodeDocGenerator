@@ -5,14 +5,10 @@ Generate response from LLM with a given codbase context. Currently this supports
 ## Build
 
 1. Using Docker
+
 ```shell
-docker build -t codedoc .
-docker run -p 5050:5050 -e OPENAI_API_KEY="<YOUR_OPEN_AI_KEY>" codedoc
-```
-or 
-```shell
-docker pull aswanthpp/code_doc_gen_llm:pilot_v.0.0.1
-docker run -p 5050:5050 -e OPENAI_API_KEY="<YOUR_OPEN_AI_KEY>" aswanthpp/code_doc_gen_llm:pilot_v.0.0.1
+docker pull aswanthpp/code_doc_gen_llm:v1.0.0
+docker run -p 5050:5050 -e OPENAI_API_KEY="<YOUR_OPEN_AI_KEY>" aswanthpp/code_doc_gen_llm:v1.0.0
 ```
 
 2. Using Flask
@@ -27,28 +23,21 @@ NB:  Replace <YOUR_OPEN_AI_KEY> with your open api key while running the docker.
 
 ## Usage
 
-1. Load codebase to LLM
+Once the Application is build using any of the above steps. Web page will be available at http://localhost:5050/. 
 
-Create a POST request to the `/load` endpoint, to load custom codebase to LLM<br>
-eg: 
-```shell
-curl --location 'http://localhost:5050/load' \
---header 'Content-Type: application/json' \
---data '{
-    "path": "https://github.com/render-examples/flask-hello-world",
-    "language": "PYTHON"
-}'
-```
-NB: This is a one time activity for a given codebase, only load if you want load another codebase or change language
+![Screenshot](static/img/sampleUi.png)
 
-2. Generate response from LLM 
+The below are the features available in this utility.
+
+### 1. Load codebase to LLM
+
+Provide a public github repo url, select the programming language from the dropdown and hit load.
+
+NB: This is a one time activity for a given codebase, only re-load if you want load another codebase or change language
+
+### 2. Generate response from LLM 
 
 Generate LLM response using the information from Custom codebase loaded earlier<br>
-eg:
-```shell
-curl --location 'http://localhost:5050/chat' \
---header 'Content-Type: application/json' \
---data '{
-    "query":"which  currency conversions are available?"
-}'
-```
+
+Enter your Query in the Text are and hit Chat, wait for the response from LLM
+
