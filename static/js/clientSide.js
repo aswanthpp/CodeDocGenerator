@@ -2,10 +2,11 @@ function loadUrl() {
   var url = document.getElementById("urlInput").value.trim();
   var language = document.getElementById("languageSelect").value;
 
-  document.getElementById('query').value = '';
-  document.getElementById('response').innerHTML = ''; 
-  document.getElementById("loadedUrlText").innerText = '';
+  document.getElementById("query").value = "";
+  document.getElementById("response").innerHTML = "";
+  document.getElementById("loadedUrlText").innerText = "";
   document.getElementById("loadedUrl").style.display = "none";
+  document.getElementById("chat-container").style.display = "none";
 
   var loadButton = document.getElementById("loadButton");
   var loadingSpinner = document.getElementById("loadingSpinner");
@@ -74,6 +75,7 @@ function getResponse() {
   var querySpinner = document.getElementById("querySpinner");
   var response = document.getElementById("response");
   response.innerText = "";
+  document.getElementById("chat-container").style.display = "none";
 
   // Disable the button to prevent multiple clicks during the fetch
   queryButton.disabled = true;
@@ -94,6 +96,7 @@ function getResponse() {
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
+        document.getElementById("chat-container").style.display = "block";
         response.innerText = data.message;
       })
       .catch((error) => {
