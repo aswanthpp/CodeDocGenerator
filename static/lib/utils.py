@@ -101,7 +101,7 @@ class LangChainCodeLoder:
         
     def get_response_from_open_ai_llm_chain(self,retriever, prompt):
         try:
-            print("creating conversation chain by combinfing llm with retriever")
+            print("creating conversation chain by combining llm( GPT-4) with retriever")
             llm = ChatOpenAI(model_name="gpt-4")
             memory = ConversationSummaryMemory(llm=llm, memory_key="chat_history", return_messages=True)
             qa = ConversationalRetrievalChain.from_llm(llm, retriever=retriever, memory=memory)
@@ -117,6 +117,7 @@ class LangChainCodeLoder:
     def get_response_from_llm_chain(self,retriever,prompt):
 
         try:
+            print("creating conversation chain by combining llm with retriever")
             qa = RetrievalQA.from_chain_type(llm=OpenAI(), 
                                     chain_type="stuff", 
                                     retriever=retriever, 
