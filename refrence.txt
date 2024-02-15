@@ -1,0 +1,5 @@
+https://www.datacamp.com/tutorial/chromadb-tutorial-step-by-step-guide
+
+
+
+https://colab.research.google.com/drive/1gyGZn_LZNrYXYXa-pltFExbptIe7DAPe?usp=sharing#scrollTo=6ObunFU30Lxh

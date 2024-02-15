@@ -1,0 +1,32 @@
+Benchmarking Application Resources in MB
+
+
+1. Just after launching
+    {
+        "available": 8772.45,
+        "free": 6363.21,
+        "percent": 11.9,
+        "total": 9962.01,
+        "used": 345.68
+    }
+
+
+2. After loading a repo: https://github.com/aswanthpp/CodeDocGenerator
+
+    {
+        "available": 8688.78,
+        "free": 6276.07,
+        "percent": 12.8,
+        "total": 9962.01,
+        "used": 429.35
+    }
+
+3. After running a prompt multiple queries
+
+    {
+        "available": 8651.7,
+        "free": 6238.94,
+        "percent": 13.2,
+        "total": 9962.01,
+        "used": 466.43
+    }

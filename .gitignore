@@ -1,2 +1,7 @@
 key.txt
 tmp/*
+chroma_db/chroma.sqlite3
+chroma_db/729f9a69-fd48-4c22-8119-537cacf4f947/data_level0.bin
+chroma_db/729f9a69-fd48-4c22-8119-537cacf4f947/header.bin
+chroma_db/729f9a69-fd48-4c22-8119-537cacf4f947/length.bin
+chroma_db/729f9a69-fd48-4c22-8119-537cacf4f947/link_lists.bin

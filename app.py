@@ -1,4 +1,5 @@
 import sys
+import psutil
 
 import jsonschema
 from flask import *
@@ -24,6 +25,8 @@ query_data_schema = {
 
 flask_app_loader = LangChainCodeLoder(qa = None)
 
+def convert_bytes_to_mb(bytes_value):
+    return round(bytes_value / (1024 ** 2), 2)
 
 @app.route('/')
 def index():
@@ -91,6 +94,29 @@ def get_response():
                 'status': 'Success',
                 'message': response
             }), 200
+    
+@app.route('/memory')
+def get_memory_usage():
+    # Get memory information
+    memory_info = psutil.virtual_memory()
+
+    total_mb = convert_bytes_to_mb(memory_info.total)
+    available_mb = convert_bytes_to_mb(memory_info.available)
+    used_mb = convert_bytes_to_mb(memory_info.used)
+    free_mb = convert_bytes_to_mb(memory_info.free)
+
+    # Format the memory information
+    response = {
+        'total': total_mb,
+        'available': available_mb,
+        'percent': memory_info.percent,
+        'used': used_mb,
+        'free': free_mb
+    }
+
+
+    return jsonify(response)
+
 
 if(__name__=='__main__'):
     print("Please set env OPENAI_API_KEY, before starting the application")
