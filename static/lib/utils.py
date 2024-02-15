@@ -120,7 +120,7 @@ class LangChainCodeLoder:
             qa = RetrievalQA.from_chain_type(llm=OpenAI(), 
                                     chain_type="stuff", 
                                     retriever=retriever, 
-                                    return_source_documents=True)
+                                    return_source_documents=False)
             result = qa(prompt)
             if("result" in result):
                 return result["result"]
