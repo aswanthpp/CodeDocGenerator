@@ -12,6 +12,8 @@ from langchain.memory import ConversationSummaryMemory
 from langchain_openai import ChatOpenAI
 from git import InvalidGitRepositoryError, Repo
 from langchain_community.document_loaders import GitLoader
+from langchain.chains import RetrievalQA
+from langchain.llms import OpenAI
 
 file_path="source_code"
 persist_directory="chroma_db"
@@ -97,16 +99,38 @@ class LangChainCodeLoder:
             print(f"Got Expcetion while persisting embeddings: {e}")
             return None
         
-    def get_open_ai_chain(self,retriever):
+    def get_response_from_open_ai_llm_chain(self,retriever, prompt):
         try:
             print("creating conversation chain by combinfing llm with retriever")
             llm = ChatOpenAI(model_name="gpt-4")
             memory = ConversationSummaryMemory(llm=llm, memory_key="chat_history", return_messages=True)
             qa = ConversationalRetrievalChain.from_llm(llm, retriever=retriever, memory=memory)
-            return qa
+            result = qa(prompt)
+            if("answer" in result):
+                return result["answer"]
+            else:
+                return None
         except Exception as e:
-            print(f"Got Expcetion while Embedding Retriver with OpenAI: {e}")
+            print(f"Got Expcetion while Getting Response from Open AI, GPT-4: {e}")
             return None
+
+    def get_response_from_llm_chain(self,retriever,prompt):
+
+        try:
+            qa = RetrievalQA.from_chain_type(llm=OpenAI(), 
+                                    chain_type="stuff", 
+                                    retriever=retriever, 
+                                    return_source_documents=True)
+            result = qa(prompt)
+            if("result" in result):
+                return result["result"]
+            else:
+                return None
+        except Exception as e:
+            print(f"Got Expcetion while Getting response from LLM: {e}")
+            return None
+        
+        
         
     def update_data_store(self,repo_path, language):
         if(not self.delete_tmp_directory()):
@@ -141,12 +165,8 @@ class LangChainCodeLoder:
             retriver=self.create_retirver()
             if(retriver is None):
                 return None
-            qa=self.get_open_ai_chain(retriver)
-            if(qa is None):
-                return None
-            result = qa(prompt)
-            return result["answer"]
+            return self.get_response_from_llm_chain(retriver, prompt)
         except Exception as e:
-            print(f"Got Expcetion while Getting Response with OpenAI: {e}")
+            print(f"Got Expcetion while Getting Response: {e}")
             return None
 

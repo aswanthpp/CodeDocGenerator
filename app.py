@@ -87,7 +87,7 @@ def get_response():
     if(response is None):
         return jsonify({
             'status': 'Failure',
-            'message': 'You need to load the document first, using /load'
+            'message': 'You need to load the GitHub Repository, using /load'
         }), 200
     else:
         return jsonify({
